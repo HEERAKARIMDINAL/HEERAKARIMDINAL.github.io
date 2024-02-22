@@ -1,1 +1,1 @@
-# HEERAKARIMDINAL.github.io
+# heerakarim.github.io
