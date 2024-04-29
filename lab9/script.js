@@ -1,3 +1,4 @@
+// Script to open and close sidebar
 function w3_open() {
   document.getElementById("mySidebar").style.display = "block";
 }
@@ -6,43 +7,51 @@ function w3_close() {
   document.getElementById("mySidebar").style.display = "none";
 }
 
-const apiKey = '2daebaae3dfd436eac535c6312c3a838';
-const apiUrl = 'https://newsapi.org/v2/top-headlines?country=us&apiKey=' + apiKey;
+// Function to fetch news articles from NewsAPI
+async function fetchNews() {
+  const apiKey = "YOUR_NEWSAPI_KEY"; // Replace with your NewsAPI key
+  const url = `https://newsdata.io/api/1/news?apikey=pub_430756c813a580a8802e6b8a42cd4d2597a2c`; // Example URL, you can customize it based on your needs
 
-fetch(apiUrl)
-.then(response => {
-  return response.json();
-})
-.then(data => {
-  // Check if data.articles exists and is an array
-  if (data.articles && Array.isArray(data.articles)) {
-    const foodItemsContainer = document.getElementById('food');
-    foodItemsContainer.innerHTML = ''; // Clear existing content
-    
-    data.articles.forEach(article => {
-      const itemDiv = document.createElement('div');
-      itemDiv.classList.add('w3-quarter');
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
 
-      const img = document.createElement('img');
-      img.src = article.urlToImage; // Assuming 'urlToImage' is the property containing the image URL
-      img.alt = article.title;
-      img.style.width = '100%';
-
-      const h3 = document.createElement('h3');
-      h3.textContent = article.title;
-
-      const p = document.createElement('p');
-      p.textContent = article.description;
-
-      itemDiv.appendChild(img);
-      itemDiv.appendChild(h3);
-      itemDiv.appendChild(p);
-      foodItemsContainer.appendChild(itemDiv);
-    });
-  } else {
-    console.error('Invalid data structure:', data);
+    console.log(data.results);
+    if (response.ok) {
+      renderArticles(data.results);
+    } else {
+      console.error("Error fetching news:");
+    }
+  } catch (error) {
+    console.error("Error fetching news:", error);
   }
-})
-.catch(error => {
-  console.error('There was a problem with the fetch operation:', error);
-});
+}
+
+function renderArticles(articles) {
+  const container = document.getElementById("articles-container");
+
+  articles.forEach((article) => {
+    const articleElement = document.createElement("div");
+    articleElement.classList.add("article");
+
+    const titleElement = document.createElement("h2");
+    const titleLink = document.createElement("a");
+    titleLink.textContent = article.title;
+    titleLink.href = article.link;
+    titleElement.appendChild(titleLink);
+    articleElement.appendChild(titleElement);
+
+    const imageElement = document.createElement("img");
+    imageElement.src = article.image_url;
+    imageElement.alt = article.title;
+    articleElement.appendChild(imageElement);
+
+    const descriptionElement = document.createElement("p");
+    descriptionElement.textContent = article.description;
+    articleElement.appendChild(descriptionElement);
+
+    container.appendChild(articleElement);
+  });
+}
+
+fetchNews();
